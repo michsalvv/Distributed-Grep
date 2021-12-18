@@ -26,7 +26,7 @@ type JoinRequest struct {
 func main() {
 
 	if len(os.Args) < 2 {
-		fmt.Println("Please specify port number:\n\tgo run reducer.go [port]")
+		fmt.Println("Please specify port number:\n\t./reducer [port]")
 		os.Exit(1)
 	}
 	addr := MASTER_IP + ":" + strconv.Itoa(9001)

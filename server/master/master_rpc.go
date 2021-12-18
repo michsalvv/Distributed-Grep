@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-//TODO vedere se si può inviare direttamente un file tramite rpc, altrimenti il cliente può fare il grep soltanto di file locali al server
+const masterPath string = "server/master/"
+
 var mappers []int
 var reducers []int // DEFAULT 1 REDUCER
 
@@ -55,12 +56,12 @@ func addWorker(req JoinRequest, list []int) (JoinResponse, []int) {
 
 func (m *Master) Grep(in Input, reply *string) error {
 	if len(mappers) == 0 {
-		log.Fatal("Not possible permform grep: {0} mappers") // Crea errore qua
+		log.Fatal("Not possible permform grep: {0} mappers")
 		return nil
 	}
 	log.Printf("Grepping word {%s} on file {%s}", in.WordToGrep, in.Text)
 
-	file, err := os.Open(in.Text)
+	file, err := os.Open(masterPath + in.Text)
 	check(err)
 
 	reader := bufio.NewReader(file)
@@ -87,7 +88,6 @@ func (m *Master) Grep(in Input, reply *string) error {
 	defer close(ch)
 	go sendToReduce(response, reducers[0], ch)
 	*reply = <-ch
-	log.Printf("REPLY:\n%s", *reply)
 	return nil
 }
 
@@ -102,7 +102,7 @@ func sortResponse(channels map[int]chan string) string {
 
 func splitLines(lines []string, chunks int) []string {
 	x := int(float64(len(lines)) / float64(chunks))
-	log.Printf("[%d linee]\t[%d worker]\t%d linee per worker", len(lines), chunks, x)
+	log.Printf("[%d Lines]\t[%d Mappers]\t%d lines for mapper", len(lines), chunks, x)
 	var offset, endOffset int
 	splittedText := make([]string, chunks)
 	for i := 0; i < chunks; i++ {
@@ -112,7 +112,7 @@ func splitLines(lines []string, chunks int) []string {
 		} else {
 			endOffset = offset + x
 		}
-		log.Printf("i: %d\toffset: %d\tendOffset: %d\n", i, offset, endOffset)
+		log.Printf("mapper: %d\tfrom: %d \tto: %d\n", i, offset, endOffset)
 		for j := offset; j < endOffset; j++ {
 			splittedText[i] += lines[j] + "\n"
 		}
@@ -128,7 +128,7 @@ func sendToMapper(lines, word string, port int, ch chan string) {
 	}
 	defer client.Close()
 
-	grepInput := Input{Text: lines, WordToGrep: word} // cambiare Input metterlo più generale
+	grepInput := Input{Text: lines, WordToGrep: word}
 	var reply string
 	err = client.Call("Worker.Map", grepInput, &reply)
 	if err != nil {
@@ -157,10 +157,7 @@ func sendToReduce(s string, port int, ch chan string) {
 
 }
 
-// Readln returns a single line (without the ending \n)
-// from the input buffered reader.
-// An error is returned iff there is an error with the
-// buffered reader.
+// Readln returns a single line (without the ending \n) from the input buffered reader.
 func readLine(r *bufio.Reader) (string, error) {
 	var (
 		isPrefix bool  = true
