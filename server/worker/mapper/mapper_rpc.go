@@ -26,7 +26,6 @@ func (w *Worker) Map(in Input, reply *string) error {
 	} else {
 		log.Printf("Found occurrences of {%s} in %d lines", in.WordToGrep, count) //debug
 	}
-	// *reply = strings.TrimSuffix(*reply, "\n")
 
 	return nil
 }
