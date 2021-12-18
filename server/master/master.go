@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-//TODO spostare costanti in file config
-
 const MASTER_PORT int = 9001
 const WORKER_IP string = "localhost"
 
