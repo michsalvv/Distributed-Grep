@@ -1,4 +1,4 @@
-# Distribuited-Grep
+# Distributed-Grep
 Grep distributed over multiple workers using the master-worker architecture according to the MapReduce paradigm.
 Using RPC to realize master-worker communication.
 
