@@ -1,4 +1,6 @@
 # Distribuited-Grep
+Grep distributed over multiple workers using the master-worker architecture according to the MapReduce paradigm.
+Using RPC to realize master-worker communication.
 
 ## How Run
 Execute the bash script **build.sh** for building *.go files.  
