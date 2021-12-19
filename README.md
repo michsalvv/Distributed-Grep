@@ -3,8 +3,10 @@ Grep distributed over multiple workers using the master-worker architecture acco
 Using RPC to realize master-worker communication.
 
 ## How Run
-Execute the bash script **build.sh** for building *.go files.  
-
+- Execute the bash script **build.sh** for building *.go files.  
+```bash
+  $ ./build.sh
+```
 - Run **master server**
 ```bash
   $ ./master
